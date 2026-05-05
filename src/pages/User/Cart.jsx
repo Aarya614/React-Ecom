@@ -1,128 +1,79 @@
-// import React, { useState } from "react";
-
-// function Cart() {
-//   const [cart, setCart] = useState(() => {
-//     try {
-//       return JSON.parse(localStorage.getItem("Cart")) || [];
-//     } catch {
-//       return [];
-//     }
-//   });
-
-//   const handleDelete = (index) => {
-//     const updated = cart.filter((_, i) => i !== index);
-//     setCart(updated);
-//     localStorage.setItem("Cart", JSON.stringify(updated));
-//   };
-
-//   const handleBuy = () => {
-//     alert("Purchase successful!");
-//     localStorage.removeItem("Cart");
-//     setCart([]);
-//   };
-
-//   return (
-//     <center>
-//       <h1>Cart</h1>
-
-//       {cart.length > 0 ? (
-//         <>
-//           <div className="card-container">
-//             {cart.map((item, i) => (
-//               <div key={i} className="card">
-//                 <h3>{item.productname}</h3>
-//                 <p>₹{item.productprice}</p>
-//                 <p>Qty: {item.quantity}</p>
-
-//                 <button
-//                   className="btn btn-danger"
-//                   onClick={() => handleDelete(i)}
-//                 >
-//                   Remove
-//                 </button>
-//               </div>
-//             ))}
-//           </div>
-
-//           <button className="btn btn-success" onClick={handleBuy}>
-//             Buy All
-//           </button>
-//         </>
-//       ) : (
-//         <p>Cart is empty</p>
-//       )}
-//     </center>
-//   );
-// }
-
-// export default Cart;
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Cart() {
-  const [cart, setCart] = useState([]);
-  const [total, setTotal] = useState(0);
+  let user = null;
 
-  const getCartKey = () => {
-    const user = JSON.parse(localStorage.getItem("currentUser"));
-    return user ? `Cart_${user.email}` : null;
-  };
+  try {
+    user = JSON.parse(localStorage.getItem("loggeduser"));
+  } catch {
+    user = null;
+  }
 
-  useEffect(() => {
-    const key = getCartKey();
-    if (!key) return;
+  const userKey = user ? `Cart_${user.email}` : null;
+  const navigate = useNavigate();
 
-    const stored = JSON.parse(localStorage.getItem(key)) || [];
-    setCart(stored);
-  }, []);
+  const [cart, setCart] = useState(() => {
+    if (!userKey) return [];
 
-  useEffect(() => {
-    const totalAmount = cart.reduce(
-      (acc, item) => acc + item.productprice * item.quantity,
-      0
-    );
-    setTotal(totalAmount);
-  }, [cart]);
+    try {
+      return JSON.parse(localStorage.getItem(userKey)) || [];
+    } catch {
+      return [];
+    }
+  });
 
   const handleDelete = (index) => {
-    const key = getCartKey();
     const updated = cart.filter((_, i) => i !== index);
-
     setCart(updated);
-    localStorage.setItem(key, JSON.stringify(updated));
+
+    if (userKey) {
+      localStorage.setItem(userKey, JSON.stringify(updated));
+    }
   };
 
-  const handleBuy = () => {
-    const key = getCartKey();
-
-    alert("Purchase successful");
-
-    localStorage.removeItem(key);
-    setCart([]);
-    setTotal(0);
-  };
+  if (!user) {
+    return (
+      <div className="cart-container">
+        <h2>Please login to view cart</h2>
+      </div>
+    );
+  }
 
   return (
-    <center>
+    <div className="cart-container">
       <h1>Cart</h1>
 
       {cart.length > 0 ? (
         <>
-          {cart.map((item, i) => (
-            <div key={i}>
-              <h3>{item.productname}</h3>
-              <p>{item.quantity} x ₹{item.productprice}</p>
+          <div className="cart-card-container">
+            {cart.map((item, i) => (
+              <div key={i} className="cart-card">
+                <h3>{item.productname}</h3>
+                <p>₹{item.productprice}</p>
+                <p>Qty: {item.quantity}</p>
 
-              <button onClick={() => handleDelete(i)}>Remove</button>
-            </div>
-          ))}
+                <button
+                  className="cart-btn cart-btn-danger"
+                  onClick={() => handleDelete(i)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
 
-          <h2>Total: ₹{total}</h2>
-          <button onClick={handleBuy}>Buy</button>
+          <button
+            className="cart-btn cart-btn-success btn-primary"
+            onClick={() => navigate("/checkout")}
+          >
+            Proceed to Checkout
+          </button>
         </>
       ) : (
         <p>Cart is empty</p>
       )}
-    </center>
+    </div>
   );
 }
 

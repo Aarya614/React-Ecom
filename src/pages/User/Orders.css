@@ -1,0 +1,48 @@
+.orders-container {
+  background: #f1f3f6;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.orders-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.order-card {
+  display: flex;
+  justify-content: space-between;
+  background: #fff;
+  padding: 15px;
+  margin: 10px auto;
+  width: 70%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: 0.3s;
+}
+
+.order-card:hover {
+  transform: scale(1.02);
+}
+
+.order-left h3 {
+  margin: 0;
+}
+
+.order-left p {
+  margin: 5px 0;
+}
+
+.order-right {
+  text-align: right;
+}
+
+.status {
+  color: green;
+  font-weight: bold;
+}
+
+.center {
+  text-align: center;
+  color: gray;
+}

@@ -67,9 +67,7 @@ function Admin() {
                   <td>{u.ename}</td>
                   <td>{u.email}</td>
                   <td>
-                    <button onClick={() => handleDelete(index)}>
-                      Delete
-                    </button>
+                    <button onClick={() => handleDelete(index)}>Delete</button>
                   </td>
                 </tr>
               ))}

@@ -56,15 +56,33 @@ function AdminProduct() {
       <center>
         <h1>Products</h1>
 
-        <input type="text" name="productname" placeholder="Product name" value={product.productname} onChange={handleChange}/>
+        <input
+          type="text"
+          name="productname"
+          placeholder="Product name"
+          value={product.productname}
+          onChange={handleChange}
+        />
         <br />
         <br />
 
-        <input type="number" name="productprice" placeholder="Price" value={product.productprice} onChange={handleChange}/>
+        <input
+          type="number"
+          name="productprice"
+          placeholder="Price"
+          value={product.productprice}
+          onChange={handleChange}
+        />
         <br />
         <br />
 
-        <input type="number" name="quantity" placeholder="Quantity" value={product.quantity} onChange={handleChange}/>
+        <input
+          type="number"
+          name="quantity"
+          placeholder="Quantity"
+          value={product.quantity}
+          onChange={handleChange}
+        />
         <br />
         <br />
         <button onClick={handleAdd}>Add Product</button>
