@@ -1,4 +1,3 @@
-import React from "react";
 import { Navigate } from "react-router-dom";
 
 function Protect({ children, role }) {
@@ -7,12 +6,15 @@ function Protect({ children, role }) {
   try {
     user = JSON.parse(localStorage.getItem("loggeduser"));
   } catch {
-    user = null;
+    // Fails safely if local storage is corrupted
   }
 
   const currentRole = localStorage.getItem("Role");
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
 
   if (role && currentRole !== role) {
     return (
@@ -22,6 +24,7 @@ function Protect({ children, role }) {
       />
     );
   }
+
 
   return children;
 }

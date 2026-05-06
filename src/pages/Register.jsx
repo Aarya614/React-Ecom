@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Register() {
   const [user, setUser] = useState({ ename: "", email: "", pass: "" });
@@ -14,11 +14,10 @@ export default function Register() {
     }
 
     let users = JSON.parse(localStorage.getItem("User")) || [];
-
     const exist = users.find((i) => i.email === user.email);
 
     if (exist) {
-      alert("Email already registered please login");
+      alert("Email already registered! Please log in.");
       navigate("/login");
       return;
     }
@@ -26,54 +25,28 @@ export default function Register() {
     users.push(user);
     localStorage.setItem("User", JSON.stringify(users));
 
-    alert("Registration Complete");
+    alert("Registration Complete!");
     navigate("/login");
   };
 
   const handlechange = (e) => {
-    setUser({
-      ...user,
-      [e.target.name]: e.target.value,
-    });
+    setUser({ ...user, [e.target.name]: e.target.value });
   };
 
   return (
     <div>
-      <h1>
-        <center>Register Page</center>
-      </h1>
-      <form style={{ textAlign: "center" }}>
-        <input
-          type="text"
-          name="ename"
-          placeholder="Enter name"
-          onChange={handlechange}
-          required
-        />
-        <br />
-        <br />
-        <input
-          type="email"
-          name="email"
-          placeholder="Enter email"
-          onChange={handlechange}
-          required
-        />
-        <br />
-        <br />
-        <input
-          type="password"
-          name="pass"
-          placeholder="Enter password"
-          onChange={handlechange}
-          required
-        />
-        <br />
-        <br />
-        <button type="submit" onClick={handlesubmit}>
-          {" "}
-          Register
-        </button>
+      <h1 className="center-title">Create an Account</h1>
+      
+      <form onSubmit={handlesubmit}>
+        <input type="text" name="ename" placeholder="Full Name" onChange={handlechange} required />
+        <input type="email" name="email" placeholder="Email Address" onChange={handlechange} required />
+        <input type="password" name="pass" placeholder="Password" onChange={handlechange} required />
+        
+        <button type="submit">Register</button>
+
+        <p style={{ textAlign: "center", marginTop: "10px", fontSize: "14px" }}>
+          Already have an account? <Link to="/login" style={{ color: "var(--primary)", fontWeight: "600" }}>Login here</Link>
+        </p>
       </form>
     </div>
   );

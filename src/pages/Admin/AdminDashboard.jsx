@@ -1,4 +1,4 @@
-import React from "react";
+import AdminNavbar from "./AdminNavbar";
 
 function AdminDashboard() {
   let loggeduser = null;
@@ -6,30 +6,51 @@ function AdminDashboard() {
   try {
     loggeduser = JSON.parse(localStorage.getItem("loggeduser"));
   } catch {
-    loggeduser = null;
+    // ✅ FIX: Removed the redundant "loggeduser = null;" assignment. 
+    // It stays null if the parsing fails!
   }
 
   return (
-    <div>
-      <center>
-        <h1>Admin Dashboard</h1>
+    <>
+      <AdminNavbar />
+      
+      <div style={{ padding: "40px 5%", maxWidth: "1000px", margin: "0 auto" }}>
+        <h2 className="center-title" style={{ marginTop: 0 }}>Admin Dashboard</h2>
 
-        <h2>Logged In User</h2>
+        <div style={{ 
+          background: "var(--surface)", 
+          padding: "30px", 
+          borderRadius: "var(--radius)", 
+          boxShadow: "var(--shadow-sm)", 
+          marginTop: "30px" 
+        }}>
+          <h3 style={{ marginBottom: "20px", color: "var(--text-main)" }}>Active Session</h3>
 
-        {loggeduser ? (
-          <table border="1" cellPadding="10">
-            <tbody>
-              <tr>
-                <td>{loggeduser.ename || "Admin"}</td>
-                <td>{loggeduser.email}</td>
-              </tr>
-            </tbody>
-          </table>
-        ) : (
-          <p>No user logged in</p>
-        )}
-      </center>
-    </div>
+          {loggeduser ? (
+            <div className="table-responsive" style={{ margin: 0, width: "100%" }}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Role / Name</th>
+                    <th>Email Address</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ fontWeight: "600", color: "var(--primary)" }}>
+                      {loggeduser.ename || "Administrator"}
+                    </td>
+                    <td>{loggeduser.email}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p style={{ color: "var(--text-muted)" }}>No admin is currently logged in.</p>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 

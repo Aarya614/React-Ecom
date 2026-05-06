@@ -1,137 +1,18 @@
-// import { useEffect, useState } from 'react'
-
-// function Checkout() {
-//     const [cartitem, setCartitems] = useState([])
-
-//     const user = JSON.parse(localStorage.getItem('loggeduser'))
-
-//     useEffect(() => {
-//         const storedproducts =
-//             JSON.parse(localStorage.getItem('Cart')) || []
-
-//         setCartitems(storedproducts)
-//     }, [])
-
-//     if (!user) {
-//         return <p style={{ textAlign: 'center' }}>Please login first</p>
-//     }
-
-//     const mycart = cartitem.filter(
-//         item => item.user === user.email
-//     )
-
-//     const total = mycart.reduce((sum, item) => {
-//         return sum + Number(item.price) * (item.quantity || 1)
-//     }, 0)
-
-//     const handlePayment = () => {
-//         let allcart =
-//             JSON.parse(localStorage.getItem('Cart')) || []
-
-//         const balancecart = allcart.filter(
-//             item => item.user !== user.email
-//         )
-
-//         localStorage.setItem(
-//             'Cart',
-//             JSON.stringify(balancecart)
-//         )
-
-//         alert('Payment successful ✅')
-
-//         setCartitems([])
-//     }
-
-//     return (
-//         <div style={{
-//             minHeight: '100vh',
-//             backgroundColor: '#f4f6f8',
-//             padding: '30px',
-//             fontFamily: 'Arial'
-//         }}>
-//             <h2 style={{
-//                 textAlign: 'center',
-//                 color: '#2c3e50',
-//                 marginBottom: '20px'
-//             }}>
-//                 Checkout
-//             </h2>
-
-//             {mycart.length === 0 ? (
-//                 <p style={{
-//                     textAlign: 'center',
-//                     color: '#888'
-//                 }}>
-//                     No product found
-//                 </p>
-//             ) : (
-//                 mycart.map((item, index) => (
-//                     <div key={index} style={{
-//                         backgroundColor: '#fff',
-//                         padding: '15px',
-//                         margin: '10px auto',
-//                         width: '60%',
-//                         borderRadius: '10px',
-//                         boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-//                     }}>
-//                         <h3 style={{ margin: 0 }}>
-//                             {item.name}
-//                         </h3>
-
-//                         <p style={{
-//                             color: '#27ae60',
-//                             fontWeight: 'bold'
-//                         }}>
-//                             Price: ₹{item.price}
-//                         </p>
-
-//                         <p style={{
-//                             color: '#555'
-//                         }}>
-//                             Qty: {item.quantity || 1}
-//                         </p>
-//                     </div>
-//                 ))
-//             )}
-
-//             <h3 style={{
-//                 textAlign: 'center',
-//                 marginTop: '20px',
-//                 color: '#2c3e50'
-//             }}>
-//                 Total: ₹{total.toFixed(2)}
-//             </h3>
-
-//             {mycart.length > 0 && (
-//                 <div style={{ textAlign: 'center', marginTop: '20px' }}>
-//                     <button
-//                         onClick={handlePayment}
-//                         style={{
-//                             padding: '12px 25px',
-//                             backgroundColor: '#3498db',
-//                             color: 'white',
-//                             border: 'none',
-//                             borderRadius: '8px',
-//                             fontSize: '16px',
-//                             cursor: 'pointer',
-//                             transition: '0.3s'
-//                         }}
-//                         onMouseOver={e => e.target.style.backgroundColor = '#2980b9'}
-//                         onMouseOut={e => e.target.style.backgroundColor = '#3498db'}
-//                     >
-//                         Pay Now
-//                     </button>
-//                 </div>
-//             )}
-//         </div>
-//     )
-// }
-
-// export default Checkout
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Checkout() {
-  const [cartitem, setCartitems] = useState([]);
+  const cartKey = "Cart"; 
+
+  const [cartitem] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(cartKey)) || [];
+    } catch {
+      return [];
+    }
+  });
+
+  const navigate = useNavigate();
 
   let user = null;
   try {
@@ -140,23 +21,12 @@ function Checkout() {
     user = null;
   }
 
-  const cartKey = user ? `Cart_${user.email}` : null;
-
-  useEffect(() => {
-    if (!cartKey) return;
-
-    const data =
-      JSON.parse(localStorage.getItem(cartKey)) || [];
-    setCartitems(data);
-  }, [cartKey]);
-
   if (!user) {
-    return <h2 style={{ textAlign: "center" }}>Please login</h2>;
+    return <h2 className="center-title">Please login to checkout</h2>;
   }
 
   const total = cartitem.reduce(
-    (sum, item) =>
-      sum + Number(item.productprice) * (item.quantity || 1),
+    (sum, item) => sum + Number(item.productprice) * (item.quantity || 1),
     0
   );
 
@@ -164,50 +34,50 @@ function Checkout() {
     const userOrdersKey = `Orders_${user.email}`;
     const allOrdersKey = "All_Orders";
 
-    const existingUserOrders =
-      JSON.parse(localStorage.getItem(userOrdersKey)) || [];
-
-    const existingAllOrders =
-      JSON.parse(localStorage.getItem(allOrdersKey)) || [];
+    const existingUserOrders = JSON.parse(localStorage.getItem(userOrdersKey)) || [];
+    const existingAllOrders = JSON.parse(localStorage.getItem(allOrdersKey)) || [];
 
     const newOrders = cartitem.map((item) => ({
       ...item,
       userEmail: user.email,
-      orderId: "ORD" + Math.floor(Math.random() * 100000),
+      orderId: "ORD-" + Math.floor(Math.random() * 900000 + 100000), 
       date: new Date().toLocaleString(),
-      status: "Order Placed"
+      status: "Processing" 
     }));
 
-    localStorage.setItem(
-      userOrdersKey,
-      JSON.stringify([...existingUserOrders, ...newOrders])
-    );
-
-    localStorage.setItem(
-      allOrdersKey,
-      JSON.stringify([...existingAllOrders, ...newOrders])
-    );
+    localStorage.setItem(userOrdersKey, JSON.stringify([...existingUserOrders, ...newOrders]));
+    localStorage.setItem(allOrdersKey, JSON.stringify([...existingAllOrders, ...newOrders]));
 
     localStorage.removeItem(cartKey);
 
-    alert("Order placed successfully ✅");
-    setCartitems([]);
+    alert("Order placed successfully! 🎉");
+    navigate("/orders"); 
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2 style={{ textAlign: "center" }}>Checkout</h2>
+    <div style={{ padding: "40px 5%", maxWidth: "600px", margin: "0 auto" }}>
+      <h2>Checkout Summary</h2>
+      <div style={{ background: "white", padding: "20px", borderRadius: "12px", marginTop: "20px", boxShadow: "var(--shadow-sm)" }}>
+        
+        {cartitem.length === 0 ? (
+          <p>Your cart is empty.</p>
+        ) : (
+          cartitem.map((item, i) => (
+            <div key={i} style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "15px 0" }}>
+              <span style={{ fontWeight: "600" }}>{item.productname}</span>
+              <span style={{ color: "var(--primary)" }}>${item.productprice}</span>
+            </div>
+          ))
+        )}
 
-      {cartitem.map((item, i) => (
-        <div key={i}>
-          <h3>{item.productname}</h3>
-          <p>₹{item.productprice}</p>
-        </div>
-      ))}
+        <h3 style={{ marginTop: "20px", textAlign: "right" }}>Total: ${total.toFixed(2)}</h3>
 
-      <h3>Total: ₹{total}</h3>
-
-      <button onClick={handlePayment}>Pay Now</button>
+        {cartitem.length > 0 && (
+          <button onClick={handlePayment} style={{ width: "100%", marginTop: "20px", padding: "15px" }}>
+            Confirm & Pay Now
+          </button>
+        )}
+      </div>
     </div>
   );
 }

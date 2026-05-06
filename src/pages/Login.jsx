@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
   const [user, setUser] = useState({ email: "", pass: "" });
+  const navigate = useNavigate();
 
   const handlesubmit = (e) => {
     e.preventDefault();
@@ -13,21 +15,17 @@ export default function Login() {
       alert("All fields are required");
       return;
     }
+
     if (user.email === adminmail && user.pass === adminpass) {
       localStorage.setItem("Role", "Admin");
       localStorage.setItem("loggeduser", JSON.stringify(user));
-
       alert("Admin Login successful");
-
-      window.location.href = "/admin/dashboard";
+      window.location.href = "/admin/dashboard"; 
       return;
     }
 
     let users = JSON.parse(localStorage.getItem("User")) || [];
-
-    const exist = users.find(
-      (i) => i.email === user.email && i.pass === user.pass,
-    );
+    const exist = users.find((i) => i.email === user.email && i.pass === user.pass);
 
     if (!exist) {
       alert("Invalid email or password");
@@ -36,10 +34,8 @@ export default function Login() {
 
     localStorage.setItem("Role", "User");
     localStorage.setItem("loggeduser", JSON.stringify(exist));
-
     alert("Login successful");
-
-    window.location.href = "/user";
+    navigate("/"); 
   };
 
   const handlechange = (e) => {
@@ -48,20 +44,16 @@ export default function Login() {
 
   return (
     <div>
-      <h1>
-        <center>Login Page</center>
-      </h1>
+      <h1 className="center-title">Login Account</h1>
 
-      <form style={{ textAlign: "center" }} onSubmit={handlesubmit}>
-        <input type="email" name="email" onChange={handlechange} required />
-        <br />
-        <br />
-
-        <input type="password" name="pass" onChange={handlechange} required />
-        <br />
-        <br />
-
+      <form onSubmit={handlesubmit}>
+        <input type="email" name="email" placeholder="Email Address" onChange={handlechange} required />
+        <input type="password" name="pass" placeholder="Password" onChange={handlechange} required />
         <button type="submit">Login</button>
+        
+        <p style={{ textAlign: "center", marginTop: "10px", fontSize: "14px" }}>
+          Don't have an account? <Link to="/register" style={{ color: "var(--primary)", fontWeight: "600" }}>Register here</Link>
+        </p>
       </form>
     </div>
   );

@@ -1,79 +1,73 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import UserNavbar from "./UserNavbar";
+import "./Cart.css";
 
 function Cart() {
-  let user = null;
-
-  try {
-    user = JSON.parse(localStorage.getItem("loggeduser"));
-  } catch {
-    user = null;
-  }
-
-  const userKey = user ? `Cart_${user.email}` : null;
   const navigate = useNavigate();
 
   const [cart, setCart] = useState(() => {
-    if (!userKey) return [];
-
     try {
-      return JSON.parse(localStorage.getItem(userKey)) || [];
+      return JSON.parse(localStorage.getItem("Cart")) || [];
     } catch {
       return [];
     }
   });
 
+  const total = cart.reduce(
+    (acc, item) => acc + Number(item.productprice || 0), 
+    0
+  );
+
   const handleDelete = (index) => {
     const updated = cart.filter((_, i) => i !== index);
     setCart(updated);
-
-    if (userKey) {
-      localStorage.setItem(userKey, JSON.stringify(updated));
-    }
+    localStorage.setItem("Cart", JSON.stringify(updated));
   };
 
-  if (!user) {
-    return (
-      <div className="cart-container">
-        <h2>Please login to view cart</h2>
-      </div>
-    );
-  }
-
   return (
-    <div className="cart-container">
-      <h1>Cart</h1>
+    <>
 
-      {cart.length > 0 ? (
-        <>
-          <div className="cart-card-container">
-            {cart.map((item, i) => (
-              <div key={i} className="cart-card">
-                <h3>{item.productname}</h3>
-                <p>₹{item.productprice}</p>
-                <p>Qty: {item.quantity}</p>
+      <UserNavbar />
 
-                <button
-                  className="cart-btn cart-btn-danger"
-                  onClick={() => handleDelete(i)}
-                >
-                  Remove
-                </button>
+      <div className="cart-container">
+        <div className="cart-items">
+          {cart.length > 0 ? (
+            cart.map((item, index) => (
+              <div className="cart-card" key={index}>
+                <img src={item.image} alt={item.productname} />
+                
+                <div className="cart-info">
+                  <h3>{item.productname}</h3>
+                  <p>${Number(item.productprice).toFixed(2)}</p>
+                  
+                  <button onClick={() => handleDelete(index)}>
+                    Remove
+                  </button>
+                </div>
               </div>
-            ))}
-          </div>
+            ))
+          ) : (
+            <p style={{ color: "var(--text-muted)", fontSize: "18px" }}>
+              Your cart is empty.
+            </p>
+          )}
+        </div>
 
-          <button
-            className="cart-btn cart-btn-success btn-primary"
-            onClick={() => navigate("/checkout")}
-          >
-            Proceed to Checkout
-          </button>
-        </>
-      ) : (
-        <p>Cart is empty</p>
-      )}
-    </div>
+        {cart.length > 0 && (
+          <div className="cart-summary">
+            <h2>Total: ${total.toFixed(2)}</h2>
+            
+            <button 
+              className="order-btn"
+              onClick={() => navigate("/checkout")}
+            >
+              Proceed to Checkout
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
